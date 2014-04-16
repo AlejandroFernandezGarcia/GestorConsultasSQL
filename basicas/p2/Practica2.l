@@ -1,22 +1,28 @@
 %{
 	#include <stdlib.h>
+	#include "Practica2.tab.h"
 	unsigned numComas=0;
+	char *p;
 %}
 idEmpleado [1-9][0-9]*
 nombreOPuesto [^\x2C\x2E\t\n]+
 anho [1-9][0-9]{3}\n
 comas [\x2C]
 %%
-{idEmpleado} {printf("Id empleado: %s\n",yytext);}
+{idEmpleado} {yylval.valInt = atoi(yytext);
+				  return ID_EMPLEADO;}
 {nombreOPuesto}	{if((numComas % 3)== 1){
-							printf("Nombre: %s\n",yytext);
+							p=(char*) malloc(sizeof(char)*strlen(yytext));
+							strcpy(p,yytext);
+							yylval.valChar = p;
+							return NOMBRE;
 						}else{
-							printf("Puesto: %s\n",yytext);
+							p=(char*) malloc(sizeof(char)*strlen(yytext));
+							strcpy(p,yytext);
+							yylval.valChar = p;
+							return PUESTO;
 						}}
-{anho}	{printf("Año: %s\n",yytext);}
+{anho}	{yylval.valInt = atoi(yytext);
+			 return ANHO;}
 {comas}	{numComas++;}
 %%
-main(){
-	yylex();
-	exit(0);
-}

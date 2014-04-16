@@ -1,11 +1,12 @@
 CC=gcc
-CFLAGS= -lfl
 TEST=Empleados.txt
+SOURCE=Practica2
 
 all:
-	flex Practica2.l
-	$(CC) lex.yy.c $(CFLAGS) -o Practica2.out
-execute: all
-	cat $(TEST) | ./Practica2.out
+	flex $(SOURCE).l
+	bison -o $(SOURCE).tab.c $(SOURCE).y -yd
+	$(CC) -o $(SOURCE) lex.yy.c $(SOURCE).tab.c -lfl -ly
+run: all
+	cat $(TEST) | ./$(SOURCE)
 clean:
-	rm -f *.out *.c *~
+	rm $(SOURCE) lex.yy.c $(SOURCE).tab.c $(SOURCE).tab.h *.~

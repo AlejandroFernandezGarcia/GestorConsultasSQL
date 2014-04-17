@@ -73,7 +73,7 @@ void imprimirLista(nodo *l){
 	}else{
 		p=p->sig;
 		while(p != NULL){
-			printf("%s=%s\n",p->nombre,p->puesto);
+			printf("%d,%s,%s,%d\n",p->idEmpleado,p->nombre,p->puesto,p->anho);
 			p=p->sig;	
 		}
 		

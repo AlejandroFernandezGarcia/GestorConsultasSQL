@@ -19,7 +19,6 @@ S : empleados;
 
 empleados : empleados ID_EMPLEADO NOMBRE PUESTO ANHO {printf("Nombre: %s\n",$3);}
 	| ID_EMPLEADO NOMBRE PUESTO ANHO {printf("Nombre: %s\n",$2);}
-	| {yyerror("No machea");}
 	;
 %%
 int main(){

@@ -1,5 +1,8 @@
 #include "lista.h"
 
+#define TRUE 1
+#define FALSE 0
+
 nodo* crearLista(){
 	nodo* l = (nodo*) malloc(sizeof(struct tnodo));
 	l->sig = NULL;
@@ -36,19 +39,41 @@ nodo* insertarLista(nodo *l,int idEmpleado,char *nombre, char *puesto,int anho){
 	p->sig = tmp;
 	return l;
 }
-
-nodo* filtrarLista(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){
-	if(l->sig == NULL){
-		return NULL; //lista vacia
-	}
+/*
+	Si no se considera el parametro debe ser:
+		- Para los int -1
+		- Para los char NULL
+*/
+nodo* filtrarListaWhere(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){
+	nodo *result;
+	result = crearLista();
+	int bId;
+	int bNombre;
+	int bPuesto;
+	int bAnho;
 	nodo *x = l->sig;
 	while((x->sig != NULL)&&((strcmp(x->nombre,nombre))!=0)){
+		bId = FALSE;
+		bNombre = FALSE;
+		bPuesto = FALSE;
+		bAnho = FALSE;
+		if((idEmpleado == x->idEmpleado) || (idEmpleado == -1)){
+			bId = TRUE;
+		}
+		
+		
+		
+		
 		x = x->sig;
 	}
 	
 	if((strcmp(x->nombre,nombre))==0){
 		return x;
 	}else return NULL;
+}
+
+void filtrarListaSelect(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){
+
 }
 
 void vaciarLista(nodo *l){

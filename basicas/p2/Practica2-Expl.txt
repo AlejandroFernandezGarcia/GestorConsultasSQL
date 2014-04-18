@@ -1,3 +1,6 @@
 Se asume que no hay espacios en el fichero Empleados.txt,
 por ello en el caso de poner un espacio se pondra el guión bajo (_) 
 que será cambiado por el espacio cuando se vaya a almacenar.
+
+Para que funcionen las tildes la codificación de caracteres del fichero 
+Empleado.txt tiene que ser UTF-8

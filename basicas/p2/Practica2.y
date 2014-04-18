@@ -4,7 +4,7 @@
 	void yyerror (char const *);
 	extern FILE *yyin;
 	nodo *lista;
-	char const errorDescription;
+	nodo *result;
 	
 %}
 %union{
@@ -21,7 +21,6 @@
 %token <valInt> FROM
 %token <valInt> TABLA
 %token <valInt> WHERE
-%token <valInt> VALOR_I
 %token <valInt> NUMERO
 %type <valInt> empleados 
 %start S
@@ -39,7 +38,7 @@ consulta : select_line from_line
 	;
 	
 select_line : SELECT '*'
-	| SELECT campo
+	| SELECT campo 
 	| SELECT campo ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	| SELECT '*' ',' campo {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	;
@@ -70,52 +69,46 @@ from_line : FROM STRING
 	| FROM STRING ';' {printf("Consulta bien hecha");}
 	;
 
-where_line : where_line WHERE
-	| ID_EMPLEADO '<' VALOR_I ';' 
-	| NOMBRE '<' STRING ';'
-	| PUESTO '<' STRING ';'
-	| ANHO '<' VALOR_I ';'
-	| ID_EMPLEADO '>' VALOR_I ';'
-	| NOMBRE '>' STRING ';'
-	| PUESTO '>' STRING ';'
-	| ANHO '>' VALOR_I ';'
-	| ID_EMPLEADO '=' VALOR_I ';'
-	| NOMBRE '=' STRING ';'
-	| PUESTO '=' STRING ';'
-	| ANHO '=' VALOR_I ';'
-	| VALOR_I '<' ID_EMPLEADO ';'
-	| STRING '<' NOMBRE ';'
-	| STRING '<' PUESTO ';'
-	| VALOR_I '<' ANHO ';'
-	| VALOR_I '>' ID_EMPLEADO ';'
-	| STRING '>' NOMBRE ';'
-	| STRING '>' PUESTO ';'
-	| VALOR_I '>' ANHO ';'
-	| VALOR_I '=' ID_EMPLEADO ';'
-	| STRING '=' NOMBRE ';'
-	| STRING '=' PUESTO ';'
-	| VALOR_I '=' ANHO ';'
+where_line : 
+	  WHERE ID_EMPLEADO '<' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MENOR, NULL, $4);}
+	| WHERE ANHO '<' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MENOR, NULL, $4);}
+	| WHERE ID_EMPLEADO '>' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MAYOR, NULL, $4);}
+	| WHERE ANHO '>' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MAYOR, NULL, $4);}
+	| WHERE ID_EMPLEADO '=' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, IGUAL, NULL, $4);}
+	| WHERE NOMBRE '=' STRING ';' {result=filtrarListaWhere(lista, MNOMBRE, IGUAL, $4, -1);}
+	| WHERE PUESTO '=' STRING ';' {result=filtrarListaWhere(lista, MPUESTO, IGUAL, $4, -1);}
+	| WHERE ANHO '=' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, IGUAL, NULL, $4);}
+	| WHERE NUMERO '<' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MAYOR, NULL, $2);}
+	| WHERE NUMERO '<' ANHO ';' {result=filtrarListaWhere(lista, MANHO, MAYOR, NULL, $2);}
+	| WHERE NUMERO '>' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MENOR, NULL, $2);}
+	| WHERE NUMERO '>' ANHO ';' {result=filtrarListaWhere(lista, MANHO, MENOR, NULL, $2);}
+	| WHERE NUMERO '=' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, IGUAL, NULL, $2);}
+	| WHERE STRING '=' NOMBRE ';' {result=filtrarListaWhere(lista, MNOMBRE, IGUAL, $2,-1);}
+	| WHERE STRING '=' PUESTO ';' {result=filtrarListaWhere(lista, MPUESTO, IGUAL, $2,-1);}
+	| WHERE NUMERO '=' ANHO ';' {result=filtrarListaWhere(lista, MANHO, IGUAL, NULL, $2);}
 	;
 	
 %%
 int main(){
 	lista = crearLista();
+	result = crearLista();
 	FILE *f;
-	/*f = fopen("Empleados.txt","r");
+	f = fopen("Empleados.txt","r");
 	yyin= f;
 	yyparse();
 	//fclose(f);
-	imprimirLista(lista);*/
+	//imprimirLista(lista);
 	//fclose(yyin);
 	f=fopen("Consultas.txt","r");
 	yyin=f;
 	//fclose(f);
 	//while(1){?
-		yyparse();
+	yyparse();
 	//}
-	
+	imprimirLista(result);
 	
 	vaciarLista(lista);
+	vaciarLista(result);
 	return 0;
 }
 void yyerror (char const *message) { fprintf (stderr, "%s\n", message);}

@@ -30,4 +30,6 @@ WHERE {return WHERE;}
 				return STRING;
 			}
 {comas}	{return ',';}
+\n
+\x20
 %%

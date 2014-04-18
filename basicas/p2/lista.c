@@ -3,6 +3,15 @@
 #define TRUE 1
 #define FALSE 0
 
+#define IGUAL 61
+#define MENOR 60
+#define MAYOR 62
+
+#define MID_EMPLEADO 5
+#define MNOMBRE 6
+#define MPUESTO 7
+#define MANHO 8
+
 nodo* crearLista(){
 	nodo* l = (nodo*) malloc(sizeof(struct tnodo));
 	l->sig = NULL;
@@ -46,37 +55,84 @@ nodo* insertarLista(nodo *l,int idEmpleado,char *nombre, char *puesto,int anho){
 	p->sig = tmp;
 	return l;
 }
-/*
-	Si no se considera el parametro debe ser:
-		- Para los int -1
-		- Para los char NULL
-*/
-nodo* filtrarListaWhere(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){
-	nodo *result;
-	result = crearLista();
+
+nodo* filtrarListaWhere(nodo *l, int operando, int operador, char *operandoS, int operandoInt){
+	nodo *resultado;
+	resultado = crearLista();
 	int bId;
 	int bNombre;
 	int bPuesto;
 	int bAnho;
 	nodo *x = l->sig;
-	while((x->sig != NULL)&&((strcmp(x->nombre,nombre))!=0)){
+	while(x->sig != NULL){
 		bId = FALSE;
 		bNombre = FALSE;
 		bPuesto = FALSE;
 		bAnho = FALSE;
-		if((idEmpleado == x->idEmpleado) || (idEmpleado == -1)){
-			bId = TRUE;
+		switch(operador){
+			case IGUAL:
+				switch(operando){
+					case MID_EMPLEADO:
+						if(x->idEmpleado == operandoInt){
+							bId = TRUE;
+						}
+					break;
+					/******************************************/
+					/************Que no busque completo************/
+					/************que busque alguna palabra de las pertenecientes************/
+					case MNOMBRE:
+						if(strcmp(x->nombre,operandoS)==0){
+							bNombre = TRUE;
+						}
+					break;
+					case MPUESTO:
+						if(strcmp(x->puesto,operandoS)==0){
+							bPuesto = TRUE;
+						}
+					break;
+					/******************************************/
+					case MANHO:
+						if(x->anho == operandoInt){
+							bAnho = TRUE;
+						}
+					break;
+				}
+			break;
+			case MENOR:
+				switch(operando){
+					case MID_EMPLEADO:
+						if(x->idEmpleado < operandoInt){
+							bId = TRUE;
+						}
+					break;
+					case MANHO:
+						if(x->anho < operandoInt){
+							bAnho = TRUE;
+						}
+					break;
+				}
+			break;
+			case MAYOR:
+				switch(operando){
+					case MID_EMPLEADO:
+						if(x->idEmpleado > operandoInt){
+							bId = TRUE;
+						}
+					break;
+					case MANHO:
+						if(x->anho > operandoInt){
+							bAnho = TRUE;
+						}
+					break;
+				}
+			break;
 		}
-		
-		
-		
-		
+		if(bId || bNombre || bPuesto || bAnho){
+			resultado=insertarLista(resultado,x->idEmpleado,x->nombre,x->puesto,x->anho);
+		}
 		x = x->sig;
 	}
-	
-	if((strcmp(x->nombre,nombre))==0){
-		return x;
-	}else return NULL;
+	return resultado;
 }
 
 void filtrarListaSelect(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){

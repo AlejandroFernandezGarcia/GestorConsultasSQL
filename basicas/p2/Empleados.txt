@@ -1,12 +1,12 @@
-1,Alberto,Director técnico,2000
-2,Antonio,Analista de sistemas,2000
+1,Alberto,Director_técnico,2000
+2,Antonio,Analista_de_sistemas,2000
 3,Belén,Comercial,2003
 4,Carlos,Comercial,2000
-5,Elena,Analista de redes,2001
+5,Elena,Analista_de_redes,2001
 6,Felipe,Programador,2001
 7,Gloria,Analista,2000
-8,Javier,Operador de sistemas y redes,2002
-9,Luis,Operador de sistemas y redes,2001
+8,Javier,Operador_de_sistemas_y_redes,2002
+9,Luis,Operador_de_sistemas_y_redes,2001
 10,María,Programadora,2004
 11,Antonio,Programador,2000
 12,Javier,Programador,2004

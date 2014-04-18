@@ -1,0 +1,3 @@
+Se asume que no hay espacios en el fichero Empleados.txt,
+por ello en el caso de poner un espacio se pondra el guión bajo (_) 
+que será cambiado por el espacio cuando se vaya a almacenar.

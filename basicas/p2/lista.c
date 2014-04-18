@@ -30,6 +30,13 @@ nodo* insertarLista(nodo *l,int idEmpleado,char *nombre, char *puesto,int anho){
 	tmp->idEmpleado = idEmpleado;	
 	strcpy(tmp->nombre,nombre);
 	strcpy(tmp->puesto,puesto);
+	int i=0;
+	while((tmp->puesto)[i]!='\0'){
+		if((tmp->puesto)[i] == '_'){
+			(tmp->puesto)[i] = ' ';
+		}
+		i++;
+	}
 	tmp->anho = anho;
 	tmp->sig = NULL;
 	

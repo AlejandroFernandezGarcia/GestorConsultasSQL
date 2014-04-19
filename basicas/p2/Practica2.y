@@ -5,6 +5,8 @@
 	extern FILE *yyin;
 	nodo *lista;
 	nodo *result;
+	camposSelect cS;
+
 	
 %}
 %union{
@@ -26,39 +28,45 @@
 %start S
 %%
 S : empleados
-	| consulta
+	| consultas
 	;
 
 empleados : empleados NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$2,$4,$6,$8);/*printf("Nombre: %s\n",$3);*/}
 	| NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$1,$3,$5,$7);/*printf("Nombre: %s\n",$2);*/}
 	;
 	
+consultas: consultas consulta {imprimirResultado(result,cS);
+					cS.idEmpleado=FALSE;cS.nombre=FALSE;cS.puesto=FALSE;cS.anho=FALSE;}
+	| consulta {imprimirResultado(result,cS);
+					cS.idEmpleado=FALSE;cS.nombre=FALSE;cS.puesto=FALSE;cS.anho=FALSE;}
+	;
+
 consulta : select_line from_line
 	| select_line from_line where_line
 	;
 	
-select_line : SELECT '*'
+select_line : SELECT '*' {cS.idEmpleado=TRUE;cS.nombre=TRUE;cS.puesto=TRUE;cS.anho=TRUE;}
 	| SELECT campo 
 	| SELECT campo ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	| SELECT '*' ',' campo {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	;
 	
-campo : campo ID_EMPLEADO 
-	| campo NOMBRE 
-	| campo PUESTO 
-	| campo ANHO 
-	| campo ',' ID_EMPLEADO
-	| campo ',' NOMBRE
-	| campo ',' PUESTO
-	| campo ',' ANHO
-	| ',' ID_EMPLEADO 
-	| ',' NOMBRE
-	| ',' PUESTO
-	| ',' ANHO
-	| ID_EMPLEADO
-	| NOMBRE
-	| PUESTO
-	| ANHO
+campo : campo ID_EMPLEADO {cS.idEmpleado=TRUE;}
+	| campo NOMBRE {cS.nombre=TRUE;}
+	| campo PUESTO {cS.puesto=TRUE;}
+	| campo ANHO {cS.anho=TRUE;}
+	| campo ',' ID_EMPLEADO {cS.idEmpleado=TRUE;}
+	| campo ',' NOMBRE {cS.nombre=TRUE;}
+	| campo ',' PUESTO {cS.puesto=TRUE;}
+	| campo ',' ANHO {cS.anho=TRUE;}
+	| ',' ID_EMPLEADO {cS.idEmpleado=TRUE;}
+	| ',' NOMBRE {cS.nombre=TRUE;}
+	| ',' PUESTO {cS.puesto=TRUE;}
+	| ',' ANHO {cS.anho=TRUE;}
+	| ID_EMPLEADO {cS.idEmpleado=TRUE;}
+	| NOMBRE {cS.nombre=TRUE;}
+	| PUESTO {cS.puesto=TRUE;}
+	| ANHO {cS.anho=TRUE;}
 	| STRING {char dError[200] = "Error sintáctico: Identificador '";
 				 strcat(dError,$1);
 				 strcat(dError,"' desconocido");
@@ -66,7 +74,7 @@ campo : campo ID_EMPLEADO
 	;
 	
 from_line : FROM STRING
-	| FROM STRING ';' {printf("Consulta bien hecha");}
+	| FROM STRING ';' {result=lista;}
 	;
 
 where_line : 
@@ -105,7 +113,7 @@ int main(){
 	//while(1){?
 	yyparse();
 	//}
-	imprimirLista(result);
+	//imprimirLista(result);
 	
 	vaciarLista(lista);
 	vaciarLista(result);

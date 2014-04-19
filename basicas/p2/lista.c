@@ -64,7 +64,7 @@ nodo* filtrarListaWhere(nodo *l, int operando, int operador, char *operandoS, in
 	int bPuesto;
 	int bAnho;
 	nodo *x = l->sig;
-	while(x->sig != NULL){
+	while(x != NULL){
 		bId = FALSE;
 		bNombre = FALSE;
 		bPuesto = FALSE;
@@ -135,10 +135,6 @@ nodo* filtrarListaWhere(nodo *l, int operando, int operador, char *operandoS, in
 	return resultado;
 }
 
-void filtrarListaSelect(nodo *l, int idEmpleado,char *nombre, char *puesto,int anho){
-
-}
-
 void vaciarLista(nodo *l){
 	nodo *tmp;
 	tmp = l;
@@ -167,4 +163,96 @@ void imprimirLista(nodo *l){
 		
 	}
 }
+int numTilde(char *string){
+	int i = 0;
+	int numTildes = 0;
+	while(string[i]!='\0'){
+		if(string[i] == -61){
+			numTildes++;
+		}
+		i++;
+	}
+	return numTildes;
+}
+
+void imprimirResultado(nodo *l,camposSelect sC){
+	nodo *p;
+	int n;
+	char *espacios;
+	char *limite;
+	char *cabecera;
+	limite = malloc(100*(sizeof(char)));
+	cabecera = malloc(100*(sizeof(char)));
+	p=l;
+	if(p->sig == NULL){
+		printf("\nNo hay coincidencias \n");
+	}else{
+		strcpy(cabecera,"|");
+		strcpy(limite,"-");
+			if(sC.idEmpleado){
+				strcat(limite,  "-------------");
+				strcat(cabecera,"ID_EMPLEADO |");
+			}
+			if(sC.nombre){
+				strcat(limite,  "-----------------");
+				strcat(cabecera,"     NOMBRE     |");
+			}
+			if(sC.puesto){
+				strcat(limite,  "---------------------------------");
+				strcat(cabecera,"             PUESTO             |");
+			}
+			if(sC.anho){
+				strcat(limite,  "-------");
+				strcat(cabecera," ANHO |");
+			}
+		printf("%s\n%s\n%s\n",limite,cabecera,limite);
+		p=p->sig;
+		while(p != NULL){
+			printf("|");
+			if(sC.idEmpleado){
+				printf("%7d     |",p->idEmpleado);
+			}
+			if(sC.nombre){
+				n = 0;
+				espacios = malloc(10*(sizeof(char)));
+				while(n < numTilde(p->nombre)){
+					if(n == 0){
+						strcpy(espacios," ");
+					}else{
+						strcat(espacios," ");
+					}
+					n++;
+				}
+				printf(" %-15s%s|",p->nombre,espacios);
+				free(espacios);
+				//printf(" %-15s %d %d|",p->nombre,(p->nombre)[3],(p->nombre)[4]);
+			}
+			if(sC.puesto){
+				n = 0;
+				espacios = malloc(10*(sizeof(char)));
+				while(n < numTilde(p->puesto)){
+					if(n == 0){
+						strcpy(espacios," ");
+					}else{
+						strcat(espacios," ");
+					}
+					n++;
+				}
+				printf(" %-30s%s |",p->puesto,espacios);
+				free(espacios);
+			}
+			if(sC.anho){
+				printf("%5d |",p->anho);
+			}
+			//printf("%d,%s,%s,%d\n",p->idEmpleado,p->nombre,p->puesto,p->anho);
+			printf("\n");
+			p=p->sig;
+		}
+		printf("%s\n",limite);
+		
+	}
+	free(cabecera);
+	free(limite);
+}
+
 

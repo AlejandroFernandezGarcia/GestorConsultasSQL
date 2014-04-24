@@ -77,9 +77,6 @@ nodo* filtrarListaWhere(nodo *l, int operando, int operador, char *operandoS, in
 							bId = TRUE;
 						}
 					break;
-					/******************************************/
-					/************Que no busque completo************/
-					/************que busque alguna palabra de las pertenecientes************/
 					case MNOMBRE:
 						if(strcmp(x->nombre,operandoS)==0){
 							bNombre = TRUE;
@@ -90,7 +87,6 @@ nodo* filtrarListaWhere(nodo *l, int operando, int operador, char *operandoS, in
 							bPuesto = TRUE;
 						}
 					break;
-					/******************************************/
 					case MANHO:
 						if(x->anho == operandoInt){
 							bAnho = TRUE;

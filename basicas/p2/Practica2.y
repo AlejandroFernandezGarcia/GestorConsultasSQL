@@ -39,6 +39,7 @@ consultas: consultas consulta {imprimirResultado(result,cS);
 					cS.idEmpleado=FALSE;cS.nombre=FALSE;cS.puesto=FALSE;cS.anho=FALSE;}
 	| consulta {imprimirResultado(result,cS);
 					cS.idEmpleado=FALSE;cS.nombre=FALSE;cS.puesto=FALSE;cS.anho=FALSE;}
+	| error {cS.idEmpleado=FALSE;cS.nombre=FALSE;cS.puesto=FALSE;cS.anho=FALSE;}
 	;
 
 consulta : select_line from_line
@@ -49,12 +50,15 @@ select_line : SELECT '*' {cS.idEmpleado=TRUE;cS.nombre=TRUE;cS.puesto=TRUE;cS.an
 	| SELECT campo 
 	| SELECT campo ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	| SELECT '*' ',' campo {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
+	| STRING {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");}
+	| STRING '*' {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");}
+	| STRING campo {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
 	;
 	
 campo : campo ID_EMPLEADO {cS.idEmpleado=TRUE;}
 	| campo NOMBRE {cS.nombre=TRUE;}
 	| campo PUESTO {cS.puesto=TRUE;}
-	| campo ANHO {cS.anho=TRUE;}
+	| campo ANHO {cS.anho=TRUE;printf("Aqui\n");}
 	| campo ',' ID_EMPLEADO {cS.idEmpleado=TRUE;}
 	| campo ',' NOMBRE {cS.nombre=TRUE;}
 	| campo ',' PUESTO {cS.puesto=TRUE;}
@@ -73,7 +77,13 @@ campo : campo ID_EMPLEADO {cS.idEmpleado=TRUE;}
 				 yyerror(dError);}
 	;
 	
-from_line : FROM STRING
+from_line : FROM STRING {if(!(((strcmp($2,"EMPLEADO")==0))||(strcmp($2,"empleado")==0))){
+									char dError[200] = "Error: La tabla '";
+									strcat(dError,$2);
+									strcat(dError,"' no existe");
+									yyerror(dError);
+									YYERROR;
+								}}
 	| FROM STRING ';' {result=lista;}
 	;
 

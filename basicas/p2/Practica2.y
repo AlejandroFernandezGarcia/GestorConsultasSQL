@@ -47,27 +47,20 @@ consulta : select_line from_line
 	;
 	
 select_line : SELECT '*' {cS.idEmpleado=TRUE;cS.nombre=TRUE;cS.puesto=TRUE;cS.anho=TRUE;}
-	| SELECT campo 
-	| SELECT campo ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
-	| SELECT '*' ',' campo {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
+	| SELECT campos 
+	| SELECT campos ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
+	| SELECT '*' ',' campos {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");}
 	| STRING {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");}
 	| STRING '*' {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");}
-	| STRING campo {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
+	| STRING campos {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
 	;
 	
-campo : campo ID_EMPLEADO {cS.idEmpleado=TRUE;}
-	| campo NOMBRE {cS.nombre=TRUE;}
-	| campo PUESTO {cS.puesto=TRUE;}
-	| campo ANHO {cS.anho=TRUE;printf("Aqui\n");}
-	| campo ',' ID_EMPLEADO {cS.idEmpleado=TRUE;}
-	| campo ',' NOMBRE {cS.nombre=TRUE;}
-	| campo ',' PUESTO {cS.puesto=TRUE;}
-	| campo ',' ANHO {cS.anho=TRUE;}
-	| ',' ID_EMPLEADO {cS.idEmpleado=TRUE;}
-	| ',' NOMBRE {cS.nombre=TRUE;}
-	| ',' PUESTO {cS.puesto=TRUE;}
-	| ',' ANHO {cS.anho=TRUE;}
-	| ID_EMPLEADO {cS.idEmpleado=TRUE;}
+campos : campos ',' campo
+	| campo
+	| campo campo {yyerror("Error sintáctico: Los identificadores tienen que ir separados por comas");YYERROR;}
+	;
+	
+campo : ID_EMPLEADO {cS.idEmpleado=TRUE;}
 	| NOMBRE {cS.nombre=TRUE;}
 	| PUESTO {cS.puesto=TRUE;}
 	| ANHO {cS.anho=TRUE;}
@@ -84,13 +77,24 @@ from_line : FROM STRING {if(!(((strcmp($2,"EMPLEADO")==0))||(strcmp($2,"empleado
 									yyerror(dError);
 									YYERROR;
 								}}
-	| FROM STRING ';' {result=lista;}
+	| FROM STRING ';' {if(!(((strcmp($2,"EMPLEADO")==0))||(strcmp($2,"empleado")==0))){
+									char dError[200] = "Error: La tabla '";
+									strcat(dError,$2);
+									strcat(dError,"' no existe");
+									yyerror(dError);
+									YYERROR;
+								}else{
+								result=lista;}}
 	;
 
 where_line : 
 	  WHERE ID_EMPLEADO '<' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MENOR, NULL, $4);}
 	| WHERE ANHO '<' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MENOR, NULL, $4);}
+	| WHERE NOMBRE '<' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '<'");}
+	| WHERE PUESTO '<' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '<'");}
 	| WHERE ID_EMPLEADO '>' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MAYOR, NULL, $4);}
+	| WHERE NOMBRE '>' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '>'");}
+	| WHERE PUESTO '>' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '>'");}
 	| WHERE ANHO '>' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MAYOR, NULL, $4);}
 	| WHERE ID_EMPLEADO '=' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, IGUAL, NULL, $4);}
 	| WHERE NOMBRE '=' STRING ';' {result=filtrarListaWhere(lista, MNOMBRE, IGUAL, $4, -1);}

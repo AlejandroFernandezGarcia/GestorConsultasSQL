@@ -15,9 +15,12 @@ ANHO {return ANHO;}
 \x2A {return '*';}
 FROM {return FROM;}
 WHERE {return WHERE;}
-\x3C {return '<';}
-\x3D {return '=';}
-\x3E {return '>';}
+\x3C {yylval.valInt = '<';
+		return OPERADOR;}
+\x3D {yylval.valInt = '=';
+		return OPERADOR;}
+\x3E {yylval.valInt = '>';
+		return OPERADOR;}
 \x3B {return ';';}
 
 

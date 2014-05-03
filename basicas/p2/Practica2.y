@@ -24,7 +24,8 @@
 %token <valInt> TABLA
 %token <valInt> WHERE
 %token <valInt> NUMERO
-%type <valInt> empleados 
+%token <valInt> OPERADOR
+%type <valInt> empleados identificador_n identificador_s
 %start S
 %%
 S : empleados
@@ -87,28 +88,39 @@ from_line : FROM STRING {if(!(((strcmp($2,"EMPLEADO")==0))||(strcmp($2,"empleado
 								result=lista;}}
 	;
 
-where_line : 
-	  WHERE ID_EMPLEADO '<' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MENOR, NULL, $4);}
-	| WHERE ANHO '<' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MENOR, NULL, $4);}
-	| WHERE NOMBRE '<' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '<'");}
-	| WHERE PUESTO '<' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '<'");}
-	| WHERE ID_EMPLEADO '>' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MAYOR, NULL, $4);}
-	| WHERE NOMBRE '>' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '>'");}
-	| WHERE PUESTO '>' STRING ';' {yyerror("Error: No se pueden comparar dos STRING con el operador '>'");}
-	| WHERE ANHO '>' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, MAYOR, NULL, $4);}
-	| WHERE ID_EMPLEADO '=' NUMERO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, IGUAL, NULL, $4);}
-	| WHERE NOMBRE '=' STRING ';' {result=filtrarListaWhere(lista, MNOMBRE, IGUAL, $4, -1);}
-	| WHERE PUESTO '=' STRING ';' {result=filtrarListaWhere(lista, MPUESTO, IGUAL, $4, -1);}
-	| WHERE ANHO '=' NUMERO ';' {result=filtrarListaWhere(lista, MANHO, IGUAL, NULL, $4);}
-	| WHERE NUMERO '<' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MAYOR, NULL, $2);}
-	| WHERE NUMERO '<' ANHO ';' {result=filtrarListaWhere(lista, MANHO, MAYOR, NULL, $2);}
-	| WHERE NUMERO '>' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, MENOR, NULL, $2);}
-	| WHERE NUMERO '>' ANHO ';' {result=filtrarListaWhere(lista, MANHO, MENOR, NULL, $2);}
-	| WHERE NUMERO '=' ID_EMPLEADO ';' {result=filtrarListaWhere(lista, MID_EMPLEADO, IGUAL, NULL, $2);}
-	| WHERE STRING '=' NOMBRE ';' {result=filtrarListaWhere(lista, MNOMBRE, IGUAL, $2,-1);}
-	| WHERE STRING '=' PUESTO ';' {result=filtrarListaWhere(lista, MPUESTO, IGUAL, $2,-1);}
-	| WHERE NUMERO '=' ANHO ';' {result=filtrarListaWhere(lista, MANHO, IGUAL, NULL, $2);}
+
+identificador_n : ID_EMPLEADO {$$ = MID_EMPLEADO;}
+	| ANHO {$$ = MANHO;}
 	;
+	
+identificador_s : NOMBRE {$$ = MNOMBRE;}
+	| PUESTO {$$ = MPUESTO;}
+	;
+	
+where_line : WHERE identificador_s OPERADOR STRING ';' {if($3 != IGUAL){
+																		  		yyerror("Error: los string solo admiten el operador '='");
+																		  	}else{
+																		  		{result=filtrarListaWhere(lista, $2, IGUAL, $4, -1);}
+																		  	}}
+	| WHERE STRING OPERADOR identificador_s ';' {if($3 != IGUAL){
+															  		yyerror("Error: los string solo admiten el operador '='");
+															  	}else{
+															  		{result=filtrarListaWhere(lista, $4, IGUAL, $2, -1);}
+															  	}}
+	| WHERE identificador_n OPERADOR NUMERO ';' {result=filtrarListaWhere(lista, $2, $3, NULL, $4);}
+	| WHERE NUMERO OPERADOR identificador_n ';' {result=filtrarListaWhere(lista, $4, $3, NULL, $2);}
+	/*Errores incompatibilidad de tipos*/
+	| WHERE identificador_n OPERADOR STRING ';' {yyerror("Error: tipos no comparables (número con string)");}
+	| WHERE STRING OPERADOR identificador_n ';' {yyerror("Error: tipos no comparables (string con número)");}
+	| WHERE identificador_s OPERADOR NUMERO ';' {yyerror("Error: tipos no comparables (string con número)");}
+	| WHERE NUMERO OPERADOR identificador_s ';' {yyerror("Error: tipos no comparables (número con string)");}
+	/*Errores dos indentificadores*/
+	/*Errores dos operandos*/
+	/*Errores 2 operandos seguidos*/
+	/*Errores 2 identificadores seguidos*/
+	
+	;//el where tengo que sacarlo para controlar el error de que la primera palabra no sea un WHERE
+	//lo mismo con el ; ya que sino tengo que duplicar todo.
 	
 %%
 int main(){

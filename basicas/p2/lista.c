@@ -172,6 +172,7 @@ int numTilde(char *string){
 }
 
 void imprimirResultado(nodo *l,camposSelect sC){
+	printf("\n\n");
 	nodo *p;
 	int n;
 	char *espacios;

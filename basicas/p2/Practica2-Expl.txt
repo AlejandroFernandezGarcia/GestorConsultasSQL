@@ -1,6 +1,22 @@
+Autor: Alejandro Fernández García
+Login: alejandro.fernandez
+
+##### make run -> compila y ejecuta
+
+
 Se asume que no hay espacios en el fichero Empleados.txt,
 por ello en el caso de poner un espacio se pondra el guión bajo (_) 
 que será cambiado por el espacio cuando se vaya a almacenar.
 
 Para que funcionen las tildes la codificación de caracteres del fichero 
-Empleado.txt tiene que ser UTF-8
+Empleado.txt tiene que ser UTF-8.
+
+Los indentificadores deben ir en mayúsculas.
+
+No se admitira el uso de WHERE 1=1 y similares ya que la parte del WHERE es opcional. El WHERE 1=1 es los mismo que no poner parte WHERE.
+
+Los campos del SELECT deben ir separados por comas.
+
+Se comprueba que la consulta SELECT no tenga a la vez el * y algún campo, es decir, o se especifican campos o se pone *.
+
+El nombre de la tabla debe ser EMPLEADO, ya que es la unica existente.

@@ -32,8 +32,8 @@ S : empleados
 	| consultas
 	;
 
-empleados : empleados NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$2,$4,$6,$8);/*printf("Nombre: %s\n",$3);*/}
-	| NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$1,$3,$5,$7);/*printf("Nombre: %s\n",$2);*/}
+empleados : empleados NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$2,$4,$6,$8);}
+	| NUMERO ',' STRING ',' STRING ',' NUMERO {lista=insertarLista(lista,$1,$3,$5,$7);}
 	;
 	
 consultas: consultas consulta {imprimirResultado(result,cS);
@@ -51,7 +51,6 @@ select_line : SELECT '*' {cS.idEmpleado=TRUE;cS.nombre=TRUE;cS.puesto=TRUE;cS.an
 	| SELECT campos 
 	| SELECT campos ',' '*' {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");YYERROR;}
 	| SELECT '*' ',' campos {yyerror("Error sintáctico: no se puede poner '*' e identificadores al mismo tiempo");YYERROR;}
-	// Sobra?¿?¿| STRING {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
 	| STRING '*' {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
 	| STRING campos {yyerror("Error sintáctico: La consulta debe comenzar por SELECT");YYERROR;}
 	;
@@ -100,35 +99,40 @@ identificador_s : NOMBRE {$$ = MNOMBRE;}
 	
 where_line: WHERE where_exp
 	| STRING where_exp {yyerror("Error: palabra clave WHERE no encontrada");YYERROR;}
+	| NUMERO where_exp {yyerror("Error: palabra clave WHERE no encontrada");YYERROR;}
 	;	
 	
-where_exp : identificador_s OPERADOR STRING ';' {if($2 != IGUAL){
+comas: ';'
+	| /*Vacio*/ {yyerror("Error: falta el punto y coma");YYERROR;}
+	;
+	
+where_exp : identificador_s OPERADOR STRING comas {if($2 != IGUAL){
 																		  		yyerror("Error: los string solo admiten el operador '='");YYERROR;
 																		  	}else{
 																		  		{result=filtrarListaWhere(lista, $1, IGUAL, $3, -1);}
 																		  	}}
-	| STRING OPERADOR identificador_s ';' {if($2 != IGUAL){
+	| STRING OPERADOR identificador_s comas {if($2 != IGUAL){
 															  		yyerror("Error: los string solo admiten el operador '='");YYERROR;
 															  	}else{
 															  		{result=filtrarListaWhere(lista, $3, IGUAL, $1, -1);}
 															  	}}
-	| identificador_n OPERADOR NUMERO ';' {result=filtrarListaWhere(lista, $1, $2, NULL, $3);}
-	| NUMERO OPERADOR identificador_n ';' {result=filtrarListaWhere(lista, $3, $2, NULL, $1);}
+	| identificador_n OPERADOR NUMERO comas {result=filtrarListaWhere(lista, $1, $2, NULL, $3);}
+	| NUMERO OPERADOR identificador_n comas {result=filtrarListaWhere(lista, $3, $2, NULL, $1);}
 	//Errores incompatibilidad de tipos
-	| identificador_n OPERADOR STRING ';' {yyerror("Error: tipos no comparables (número con string)");YYERROR;}
-	| STRING OPERADOR identificador_n ';' {yyerror("Error: tipos no comparables (string con número)");YYERROR;}
-	| identificador_s OPERADOR NUMERO ';' {yyerror("Error: tipos no comparables (string con número)");YYERROR;}
-	| NUMERO OPERADOR identificador_s ';' {yyerror("Error: tipos no comparables (número con string)");YYERROR;}
+	| identificador_n OPERADOR STRING comas {yyerror("Error: tipos no comparables (número con string)");YYERROR;}
+	| STRING OPERADOR identificador_n comas {yyerror("Error: tipos no comparables (string con número)");YYERROR;}
+	| identificador_s OPERADOR NUMERO comas {yyerror("Error: tipos no comparables (string con número)");YYERROR;}
+	| NUMERO OPERADOR identificador_s comas {yyerror("Error: tipos no comparables (número con string)");YYERROR;}
 	//Errores dos indentificadores
-	| identificador_n OPERADOR identificador_n ';' {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
-	| identificador_s OPERADOR identificador_s ';' {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
-	| identificador_s OPERADOR identificador_n ';' {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
-	| identificador_n OPERADOR identificador_s ';' {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
+	| identificador_n OPERADOR identificador_n comas {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
+	| identificador_s OPERADOR identificador_s comas {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
+	| identificador_s OPERADOR identificador_n comas {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
+	| identificador_n OPERADOR identificador_s comas {yyerror("Error: no se pueden comparar dos identificadores");YYERROR;}
 	//Errores dos operandos
-	| NUMERO OPERADOR NUMERO ';' {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
-	| STRING OPERADOR STRING ';' {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
-	| NUMERO OPERADOR STRING ';' {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
-	| STRING OPERADOR NUMERO ';' {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
+	| NUMERO OPERADOR NUMERO comas {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
+	| STRING OPERADOR STRING comas {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
+	| NUMERO OPERADOR STRING comas {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
+	| STRING OPERADOR NUMERO comas {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
 	;
 	
 	//el where tengo que sacarlo para controlar el error de que la primera palabra no sea un WHERE
@@ -144,16 +148,9 @@ int main(){
 	f = fopen("Empleados.txt","r");
 	yyin= f;
 	yyparse();
-	//fclose(f);
-	//imprimirLista(lista);
-	//fclose(yyin);
 	f=fopen("Consultas.txt","r");
 	yyin=f;
-	//fclose(f);
-	//while(1){?
 	yyparse();
-	//}
-	//imprimirLista(result);
 	
 	vaciarLista(lista);
 	vaciarLista(result);

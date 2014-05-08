@@ -175,6 +175,7 @@ void imprimirResultado(nodo *l,camposSelect sC){
 	printf("\n\n");
 	nodo *p;
 	int n;
+	int contador = 0;
 	char *espacios;
 	char *limite;
 	char *cabecera;
@@ -205,6 +206,7 @@ void imprimirResultado(nodo *l,camposSelect sC){
 		printf("%s\n%s\n%s\n",limite,cabecera,limite);
 		p=p->sig;
 		while(p != NULL){
+			contador++;
 			printf("|");
 			if(sC.idEmpleado){
 				printf("%7d     |",p->idEmpleado);
@@ -246,7 +248,7 @@ void imprimirResultado(nodo *l,camposSelect sC){
 			p=p->sig;
 		}
 		printf("%s\n",limite);
-		
+		printf("%d filas seleccionadas\n\n",contador);
 	}
 	free(cabecera);
 	free(limite);

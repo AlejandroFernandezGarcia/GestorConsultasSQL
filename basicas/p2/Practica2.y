@@ -135,10 +135,6 @@ where_exp : identificador_s OPERADOR STRING comas {if($2 != IGUAL){
 	| STRING OPERADOR NUMERO comas {yyerror("Error: no se pueden comparar dos operandos");YYERROR;}
 	;
 	
-	//el where tengo que sacarlo para controlar el error de que la primera palabra no sea un WHERE
-	//lo mismo con el ; ya que sino tengo que duplicar todo.
-	/*Errores 2 operandos seguidos*/
-	/*Errores 2 identificadores seguidos*/
 	
 %%
 int main(){

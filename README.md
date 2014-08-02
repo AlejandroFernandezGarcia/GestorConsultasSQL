@@ -1,6 +1,3 @@
-Autor: Alejandro Fernández García
-Login: alejandro.fernandez
-
 ##### make run -> compila y ejecuta
 
 
@@ -17,7 +14,5 @@ No se admitira el uso de WHERE 1=1 y similares ya que la parte del WHERE en sql 
 El WHERE 1=1 es los mismo que no poner parte WHERE,que seria lo que tengo implementado.
 
 Los campos del SELECT deben ir separados por comas.
-
-Se comprueba que la consulta SELECT no tenga a la vez el * y algún campo, es decir, o se especifican campos o se pone *.
 
 El nombre de la tabla debe ser EMPLEADO, ya que es la unica existente.
